@@ -35,13 +35,13 @@ if [ "$1" = "add" ] ; then
 		shift
 		MODE=2
 	elif [ "$1" = "--help" ] ; then
-		echo "${UNDERLINE}Usage:${NORMAL}\n"
-		echo "    $ ${GREEN}daily add [--OPTION] COMMAND"
-		echo "      ${NORMAL}Add your routine command. If you don't write option, command is added at the end."
-		echo "      ${YELLOW}Example: daily add brew update${NORMAL}\n"
-		echo "${UNDERLINE}Options:${NORMAL}\n"
-		echo "    ${BLUE}--after ORDER_NUMBER		${NORMAL}Add command after order number"
-		echo "    ${BLUE}--before ORDER_NUMBER		${NORMAL}Add command before order number"
+		echo -e "${UNDERLINE}Usage:${NORMAL}\n"
+		echo -e "    $ ${GREEN}daily add [--OPTION] COMMAND"
+		echo -e "      ${NORMAL}Add your routine command. If you don't write option, command is added at the end."
+		echo -e "      ${YELLOW}Example: daily add brew update${NORMAL}\n"
+		echo -e "${UNDERLINE}Options:${NORMAL}\n"
+		echo -e "    ${BLUE}--after ORDER_NUMBER		${NORMAL}Add command after order number"
+		echo -e "    ${BLUE}--before ORDER_NUMBER		${NORMAL}Add command before order number"
 		return
 	fi
 
@@ -49,7 +49,7 @@ if [ "$1" = "add" ] ; then
 		if [ "$1" =~ [0-9] ] ; then
 			ITEM=$1
 		else
-			echo "daily: You have to write 'order number' after '--before' or '--after' option. See 'daily add --help'.\n\n${YELLOW}Example: daily add --after 2 gem update"
+			echo -e "daily: You have to write 'order number' after '--before' or '--after' option. See 'daily add --help'.\n\n${YELLOW}Example: daily add --after 2 gem update"
 			return
 		fi
 		ITEM=$1
@@ -57,7 +57,7 @@ if [ "$1" = "add" ] ; then
 	fi
 
 	if [ "$1" = "" ] ; then
-		echo "daily: You have to write the command after 'add' command. See 'daily add --help'.\n\n${YELLOW}Example: daily add brew update"
+		echo -e "daily: You have to write the command after 'add' command. See 'daily add --help'.\n\n${YELLOW}Example: daily add brew update"
 	else
 		if [ $MODE -gt 0 ] ; then
 			if [ $MODE = 1 ] ; then
@@ -68,7 +68,7 @@ if [ "$1" = "add" ] ; then
 				$@" command.txt > command.txt.tmp
 			mv command.txt.tmp command.txt
 		else
-			echo "$@" >> command.txt
+			echo -e "$@" >> command.txt
 		fi
 	fi
 elif [ "$1" = "remove" ] ; then
@@ -78,49 +78,49 @@ elif [ "$1" = "remove" ] ; then
 		if [ "$1" =~ [0-9] ] ; then
 			RESULT=$(sed -n "$1p" command.txt)
 			if [ "$RESULT" = "" ] ; then
-				echo "daily: There is no $1 order."
+				echo -e "daily: There is no $1 order."
 				return
 			fi
 			sed -e "$1d" command.txt > command.txt.tmp
 			mv command.txt.tmp command.txt
-			echo "daily: Successfully removed '$RESULT' command."
+			echo -e "daily: Successfully removed '$RESULT' command."
 		else
-			echo "daily: You have to write 'order number' after 'order' command. See 'daily remove --help'.\n\n${YELLOW}Example: daily remove --order 2"
+			echo -e "daily: You have to write 'order number' after 'order' command. See 'daily remove --help'.\n\n${YELLOW}Example: daily remove --order 2"
 		fi
 	elif [ "$1" = "--help" ] ; then
-		echo "${UNDERLINE}Usage:${NORMAL}\n"
-	    echo "    $ ${GREEN}daily remove [--OPTION] COMMAND"
-        echo "      ${NORMAL}Remove your routine command. If you don't write option, command is deleted by name."
-        echo "      ${YELLOW}Example: daily remove name brew update${NORMAL}\n"
-        echo "${UNDERLINE}Options:${NORMAL}\n"
-        echo "    ${BLUE}--order ORDER_NUMBER      ${NORMAL}Remove command by order number"
+		echo -e "${UNDERLINE}Usage:${NORMAL}\n"
+	    echo -e "    $ ${GREEN}daily remove [--OPTION] COMMAND"
+        echo -e "      ${NORMAL}Remove your routine command. If you don't write option, command is deleted by name."
+        echo -e "      ${YELLOW}Example: daily remove name brew update${NORMAL}\n"
+        echo -e "${UNDERLINE}Options:${NORMAL}\n"
+        echo -e "    ${BLUE}--order ORDER_NUMBER      ${NORMAL}Remove command by order number"
 		return
 	else
 		RESULT=$(sed -n "/$@/p" command.txt)
 		if [ "$RESULT" = "" ] ; then
-			echo "daily: '$@' is not exist."
+			echo -e "daily: '$@' is not exist."
 			return
 		fi
 		sed -e "/$@/d" command.txt > command.txt.tmp
 		mv command.txt.tmp command.txt
-		echo "daily: Successfully removed '$@' command."
+		echo -e "daily: Successfully removed '$@' command."
 	fi
 elif [ "$1" = "list" ] ; then
 	shift
 	if [ "$1" = "--help" ] ; then
-		echo "${UNDERLINE}Usage:${NORMAL}\n"
-		echo "    $ ${GREEN}daily list"
-		echo "      ${NORMAL}Show your daily routine commands."
+		echo -e "${UNDERLINE}Usage:${NORMAL}\n"
+		echo -e "    $ ${GREEN}daily list"
+		echo -e "      ${NORMAL}Show your daily routine commands."
 		return
 	fi
 	COUNT=0
 	while read -r LINE
 	do
 		let COUNT++
-		echo "  [$COUNT] $LINE"
+		echo -e "  [$COUNT] $LINE"
 	done < "command.txt"
 	if [ $COUNT = 0 ] ; then
-		echo "daily: Command is not existd. You have to add command.\n\n${YELLOW}Example: daily add brew update"
+		echo -e "daily: Command is not existd. You have to add command.\n\n${YELLOW}Example: daily add brew update"
 	fi
 elif [ "$1" = "run" ] ; then
 	shift
@@ -130,15 +130,15 @@ elif [ "$1" = "run" ] ; then
 		if [[ -d "$1" ]] ; then
 			FILE=$1
 		else
-			echo "daily: '$1' is not exist."
+			echo -e "daily: '$1' is not exist."
 			return
 		fi
 	elif [ "$1" = "--help" ] ; then
-		echo "${UNDERLINE}Usage:${NORMAL}\n"
-		echo "    $ ${GREEN}daily run [--OPTION]"
-		echo "      ${NORMAL}Run your daily routine commands.\n"
-		echo "${UNDERLINE}Options:${NORMAL}\n"
-		echo "    ${BLUE}--file FILE_NAME		Execute from command list file."
+		echo -e "${UNDERLINE}Usage:${NORMAL}\n"
+		echo -e "    $ ${GREEN}daily run [--OPTION]"
+		echo -e "      ${NORMAL}Run your daily routine commands.\n"
+		echo -e "${UNDERLINE}Options:${NORMAL}\n"
+		echo -e "    ${BLUE}--file FILE_NAME		Execute from command list file."
 		return
 	fi
 
@@ -147,25 +147,25 @@ elif [ "$1" = "run" ] ; then
 	while read -r LINE
 	do
 		let COUNT++
-		echo "${YELLOW}[$COUNT] '$LINE' execute${NORMAL}"
+		echo -e "${YELLOW}[$COUNT] '$LINE' execute${NORMAL}"
 		eval $LINE
 	done < $FILE
 
 	if [ $COUNT = 0 ] ; then
-		echo "daily: Command is not exist. You have to add command.\n\n${YELLOW}Example: daily add brew update"
+		echo -e "daily: Command is not exist. You have to add command.\n\n${YELLOW}Example: daily add brew update"
 	else
-		echo "\n${YELLOW}daily: Finished!! ($((SECONDS-START)) sec)"
+		echo -e "\n${YELLOW}daily: Finished!! ($((SECONDS-START)) sec)"
 	fi
 elif [ "$1" = "help" ] || [ "$1" = "" ] ; then
-	echo "${UNDERLINE}Usage:${NORMAL}\n"
-	echo "    $ ${GREEN}daily COMMAND${NORMAL}"
-	echo "      daily run your routine commands very simply.\n"
-	echo "${UNDERLINE}Commands:${NORMAL}\n"
-	echo "    ${GREEN}+ add		${NORMAL}Add your daily routine command"
-	echo "    ${GREEN}+ remove		${NORMAL}Remove your daily routine command"
-	echo "    ${GREEN}+ run		${NORMAL}Run your daily routine commands"
-	echo "    ${GREEN}+ list		${NORMAL}Show your daily routine commands"
-	echo "\n${UNDERLINE}${BLUE}* daily is simple. *"
+	echo -e "${UNDERLINE}Usage:${NORMAL} \n"
+	echo -e "    $ ${GREEN}daily COMMAND${NORMAL}"
+	echo -e "      daily run your routine commands very simply. \n"
+	echo -e "${UNDERLINE}Commands:${NORMAL} \n"
+	echo -e "    ${GREEN}+ add		${NORMAL}Add your daily routine command"
+	echo -e "    ${GREEN}+ remove		${NORMAL}Remove your daily routine command"
+	echo -e "    ${GREEN}+ run		${NORMAL}Run your daily routine commands"
+	echo -e "    ${GREEN}+ list		${NORMAL}Show your daily routine commands \n"
+	echo -e "${UNDERLINE}${BLUE}* daily is simple. *"
 else
-	echo "daily: '$@' is not daily command. See 'daily help'."
+	echo -e "daily: '$@' is not daily command. See 'daily help'."
 fi
