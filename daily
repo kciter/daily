@@ -42,7 +42,7 @@ if [ "$1" = "add" ] ; then
 		echo -e "${UNDERLINE}Options:${NORMAL}\n"
 		echo -e "    ${BLUE}--after ORDER_NUMBER		${NORMAL}Add command after order number"
 		echo -e "    ${BLUE}--before ORDER_NUMBER		${NORMAL}Add command before order number"
-		return
+		exit 1
 	fi
 
 	if [ $MODE -gt 0 ] ; then
@@ -50,7 +50,7 @@ if [ "$1" = "add" ] ; then
 			ITEM=$1
 		else
 			echo -e "daily: You have to write 'order number' after '--before' or '--after' option. See 'daily add --help'.\n\n${YELLOW}Example: daily add --after 2 gem update"
-			return
+			exit 1
 		fi
 		ITEM=$1
 		shift
@@ -65,24 +65,24 @@ if [ "$1" = "add" ] ; then
 			fi
 
 			sed -e "$ITEM i\\
-				$@" command.txt > command.txt.tmp
-			mv command.txt.tmp command.txt
+				$@" /usr/local/daily/command.txt > /usr/local/daily/command.txt.tmp
+			mv /usr/local/daily/command.txt.tmp /usr/local/daily/command.txt
 		else
-			echo -e "$@" >> command.txt
+			echo -e "$@" >> /usr/local/daily/command.txt
 		fi
 	fi
 elif [ "$1" = "remove" ] ; then
 	shift
 	if [ "$1" = "--order" ] ; then
 		shift
-		if [ "$1" =~ [0-9] ] ; then
-			RESULT=$(sed -n "$1p" command.txt)
+		if [[ $1 =~ [0-9] ]] ; then
+			RESULT=$(sed -n "$1p" /usr/local/daily/command.txt)
 			if [ "$RESULT" = "" ] ; then
 				echo -e "daily: There is no $1 order."
-				return
+				exit 1
 			fi
-			sed -e "$1d" command.txt > command.txt.tmp
-			mv command.txt.tmp command.txt
+			sed -e "$1d" /usr/local/daily/command.txt > /usr/local/daily/command.txt.tmp
+			mv /usr/local/daily/command.txt.tmp /usr/local/daily/command.txt
 			echo -e "daily: Successfully removed '$RESULT' command."
 		else
 			echo -e "daily: You have to write 'order number' after 'order' command. See 'daily remove --help'.\n\n${YELLOW}Example: daily remove --order 2"
@@ -94,15 +94,15 @@ elif [ "$1" = "remove" ] ; then
         echo -e "      ${YELLOW}Example: daily remove name brew update${NORMAL}\n"
         echo -e "${UNDERLINE}Options:${NORMAL}\n"
         echo -e "    ${BLUE}--order ORDER_NUMBER      ${NORMAL}Remove command by order number"
-		return
+		exit 1
 	else
-		RESULT=$(sed -n "/$@/p" command.txt)
+		RESULT=$(sed -n "/^$@$/p" /usr/local/daily/command.txt)
 		if [ "$RESULT" = "" ] ; then
 			echo -e "daily: '$@' is not exist."
-			return
+			exit 1
 		fi
-		sed -e "/$@/d" command.txt > command.txt.tmp
-		mv command.txt.tmp command.txt
+		sed -e "/^$@$/d" /usr/local/daily/command.txt > /usr/local/daily/command.txt.tmp
+		mv /usr/local/daily/command.txt.tmp /usr/local/daily/command.txt
 		echo -e "daily: Successfully removed '$@' command."
 	fi
 elif [ "$1" = "list" ] ; then
@@ -111,27 +111,27 @@ elif [ "$1" = "list" ] ; then
 		echo -e "${UNDERLINE}Usage:${NORMAL}\n"
 		echo -e "    $ ${GREEN}daily list"
 		echo -e "      ${NORMAL}Show your daily routine commands."
-		return
+		exit 1
 	fi
 	COUNT=0
 	while read -r LINE
 	do
 		let COUNT++
 		echo -e "  [$COUNT] $LINE"
-	done < "command.txt"
+	done < "/usr/local/daily/command.txt"
 	if [ $COUNT = 0 ] ; then
 		echo -e "daily: Command is not existd. You have to add command.\n\n${YELLOW}Example: daily add brew update"
 	fi
 elif [ "$1" = "run" ] ; then
 	shift
-	FILE="command.txt"
+	FILE="/usr/local/daily/command.txt"
 	if [ "$1" = "--file" ] ; then
 		shift
 		if [[ -d "$1" ]] ; then
 			FILE=$1
 		else
 			echo -e "daily: '$1' is not exist."
-			return
+			exit 1
 		fi
 	elif [ "$1" = "--help" ] ; then
 		echo -e "${UNDERLINE}Usage:${NORMAL}\n"
@@ -139,7 +139,7 @@ elif [ "$1" = "run" ] ; then
 		echo -e "      ${NORMAL}Run your daily routine commands.\n"
 		echo -e "${UNDERLINE}Options:${NORMAL}\n"
 		echo -e "    ${BLUE}--file FILE_NAME		Execute from command list file."
-		return
+		exit 1
 	fi
 
 	START=$SECONDS
