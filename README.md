@@ -40,6 +40,11 @@ $ daily run
 You can see more document by `daily help`.
 <img src="https://github.com/kciter/daily/raw/master/images/help.png">
 
+# Manually Edit list
+Each line is an command
+```bash
+$ nano /usr/local/daily/command.txt
+```
 
 # Reference
 * https://github.com/kamranahmedse/git-standup
